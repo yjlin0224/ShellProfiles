@@ -45,12 +45,27 @@ function Prompt {
         $Path = $Path.Remove(0, "Microsoft.PowerShell.Core\FileSystem::".Length)
     }
     $Authority = "$($Env:UserName)@$([System.Net.Dns]::GetHostName())"
-    $host.UI.RawUI.WindowTitle = "$($Authority):$($Path) - PowerShell"
+    $Host.UI.RawUI.WindowTitle = "$($Authority):$($Path) - PowerShell"
     Write-Host $Authority -NoNewLine -ForegroundColor Green
     Write-Host ":" -NoNewLine -ForegroundColor DarkGray
     Write-Host $Path
     return "$(">" * ($NestedPromptLevel + 1)) "
 }
+
+function Set-LastWriteTime {
+    $FilePath = $Args[0]
+    if ($null -eq $FilePath) {
+        return
+    }
+    if (Test-Path $FilePath) {
+        (Get-ChildItem $FilePath).LastWriteTime = Get-Date
+    }
+    else {
+        New-Item $FilePath
+    }
+}
+
+Set-Alias touch Set-LastWriteTime
 
 & {
     $WindowsInfomation = & "~\Get-WindowsInfomation.ps1"

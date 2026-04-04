@@ -1,145 +1,186 @@
 {
-    "$help": "https://aka.ms/terminal-documentation",
-    "$schema": "https://aka.ms/terminal-profiles-schema",
-    "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
-    "windowingBehavior": "useExisting",
-    "initialCols": 120,
-    "initialRows": 36,
-    "centerOnLaunch": true,
-    "disabledProfileSources": [
-        "Windows.Terminal.Azure"
-    ],
-    "copyFormatting": "all",
-    "largePasteWarning": false,
-    "multiLinePasteWarning": false,
-    "theme": "Mica",
-    "themes": [
-        {
-            "name": "Mica",
-            "window": {
-                "applicationTheme": "system",
-                "useMica": true
-            },
-            "tab": {
-                "background": "#00000040",
-                "unfocusedBackground": "#00000000"
-            },
-            "tabRow": {
-                "background": "#00000000",
-                "unfocusedBackground": "#00000000"
-            }
-        }
-    ],
-    "schemes": [
-        {
-            "name": "VSCode Dark+",
-            "foreground": "#cccccc",
-            "background": "#252526",
-            "selectionBackground": "#264f78",
-            "cursorColor": "#cccccc",
-            "black": "#000000",
-            "red": "#cd3131",
-            "green": "#0dbc79",
-            "yellow": "#e5e510",
-            "blue": "#2472c8",
-            "purple": "#bc3fbc",
-            "cyan": "#11a8cd",
-            "white": "#e5e5e5",
-            "brightBlack": "#666666",
-            "brightRed": "#f14c4c",
-            "brightGreen": "#23d18b",
-            "brightYellow": "#f5f543",
-            "brightBlue": "#3b8eea",
-            "brightPurple": "#d670d6",
-            "brightCyan": "#29b8db",
-            "brightWhite": "#e5e5e5"
-        },
-        {
-            "name": "VSCode Light+",
-            "foreground": "#333333",
-            "background": "#f3f3f3",
-            "selectionBackground": "#add6ff",
-            "cursorColor": "#333333",
-            "black": "#000000",
-            "red": "#cd3131",
-            "green": "#00bc00",
-            "yellow": "#949800",
-            "blue": "#0451a5",
-            "purple": "#bc05bc",
-            "cyan": "#0598bc",
-            "white": "#555555",
-            "brightBlack": "#666666",
-            "brightRed": "#cd3131",
-            "brightGreen": "#14ce14",
-            "brightYellow": "#b5ba00",
-            "brightBlue": "#0451a5",
-            "brightPurple": "#bc05bc",
-            "brightCyan": "#0598bc",
-            "brightWhite": "#a5a5a5"
-        }
-    ],
-    "profiles": {
-        "defaults": {
-            "colorScheme": "VSCode Dark+",
-            "font": {
-                "face": "Sarasa Term TC",
-                "size": 10
-            },
-            "cursorShape": "bar",
-            "opacity": 25,
-            "padding": "6, 6, 0, 6",
-            "background": "#000000",
-            "unfocusedAppearance": {
-                "background": "#202020",
-            },
-            "antialiasingMode": "cleartype",
-            "historySize": 32767,
-            "bellStyle": [
-                "window",
-                "taskbar"
-            ],
-            "experimental.autoMarkPrompts": true,
-            "experimental.showMarksOnScrollbar": true,
-            "experimental.rightClickContextMenu": true,
-        },
-        "list": [
-            {
-                "name": "PowerShell",
-                "commandline": "pwsh -NoLogo",
-                "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
-                "source": "Windows.Terminal.PowershellCore"
-            },
-            {
-                "name": "Windows PowerShell",
-                "hidden": true,
-                "commandline": "powershell -NoLogo",
-                "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}"
-            },
-            {
-                "name": "Command Prompt",
-                "commandline": "cmd /k %UserProfile%\\.cmdrc.bat",
-                "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}"
-            },
-            {
-                "name": "Git Bash",
-                "commandline": "%ProgramFiles%\\Git\\bin\\bash.exe -il",
-                "startingDirectory": "%UserProfile%",
-                "icon": "%ProgramFiles%\\Git\\mingw64\\share\\git\\git-for-windows.ico",
-                "guid": "{d15b228a-05d7-50d1-8472-f60aaba86efc}"
-            },
-            {
-                "name": "WSL",
-                "hidden": true,
-                "guid": "{2c4de342-38b7-51cf-b940-2309a097f518}",
-                "source": "Windows.Terminal.Wsl"
-            },
-            {
-                "name": "Ubuntu (WSL)",
-                "commandline": "wsl -d Ubuntu",
-                "startingDirectory": "~",
-                "guid": "{51855cb2-8cce-5362-8f54-464b92b32386}",
-                "source": "CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc"
-            }
-        ]
+  // Updated with Windows Terminal v1.24
+  "$help": "https://aka.ms/terminal-documentation",
+  "$schema": "https://aka.ms/terminal-profiles-schema",
+  // Startup
+  "defaultProfile": "{574e775e-4f2a-5b96-ac1e-a2962a402336}", // "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}"
+  "startOnUserLogin": true, // false
+  "initialCols": 144, // 120
+  "initialRows": 40, // 30
+  "centerOnLaunch": true, // false
+  "disabledProfileSources": ["Windows.Terminal.Azure", "Windows.Terminal.VisualStudio"], // []
+  "compatibility.allowHeadless": true, // false
+  // Interaction
+  "copyFormatting": "all", // false
+  "alwaysShowNotificationIcon": true, // false
+  "warning.multiLinePaste": false, // true
+  "searchWebDefaultQueryUrl": "https://www.google.com/search?q=%s", // "https://www.bing.com/search?q=%s"
+  // Appearance
+  "theme": "Dark with Mica", // "system"
+  // Color schemes
+  "schemes": [
+    {
+      "name": "VSCode Dark+",
+      "cursorColor": "#CCCCCC",
+      "selectionBackground": "#264F78",
+      "background": "#252526",
+      "foreground": "#CCCCCC",
+      "black": "#000000",
+      "blue": "#2472C8",
+      "cyan": "#11A8CD",
+      "green": "#0DBC79",
+      "purple": "#BC3FBC",
+      "red": "#CD3131",
+      "white": "#E5E5E5",
+      "yellow": "#E5E510",
+      "brightBlack": "#666666",
+      "brightBlue": "#3B8EEA",
+      "brightCyan": "#29B8DB",
+      "brightGreen": "#23D18B",
+      "brightPurple": "#D670D6",
+      "brightRed": "#F14C4C",
+      "brightWhite": "#E5E5E5",
+      "brightYellow": "#F5F543"
+    },
+    {
+      "name": "VSCode Light+",
+      "cursorColor": "#333333",
+      "selectionBackground": "#ADD6FF",
+      "background": "#F3F3F3",
+      "foreground": "#333333",
+      "black": "#000000",
+      "blue": "#0451A5",
+      "cyan": "#0598BC",
+      "green": "#00BC00",
+      "purple": "#BC05BC",
+      "red": "#CD3131",
+      "white": "#555555",
+      "yellow": "#949800",
+      "brightBlack": "#666666",
+      "brightBlue": "#0451A5",
+      "brightCyan": "#0598BC",
+      "brightGreen": "#14CE14",
+      "brightPurple": "#BC05BC",
+      "brightRed": "#CD3131",
+      "brightWhite": "#A5A5A5",
+      "brightYellow": "#B5BA00"
     }
+  ],
+  // Rendering
+  // Actions
+  // Profile
+  "profiles": {
+    "defaults": {
+      // Appearance
+      "colorScheme": {
+        "light": "VSCode Light+",
+        "dark": "VSCode Dark+"
+      }, // "Campbell"
+      "font": {
+        // face = "Sarasa Term TC" & size = 10 => char size = 6.5px × 16.5px
+        "face": "Sarasa Term TC", // "Cascadia Mono"
+        "size": 10, // 12
+        "features": {
+          "cv10": 6,
+          "cv31": 16,
+          "cv35": 6,
+          "cv42": 10,
+          "cv44": 2,
+          "cv49": 2,
+          "cv72": 3,
+          "cv77": 2,
+          "cv80": 2,
+          "cv82": 6,
+          "cv88": 2,
+          "cv93": 3
+        } // {}
+      },
+      "backgroundImage": "D:/Pictures/Klaudia_ValentzHome_RelaxationWithoutBG.png", // null
+      "backgroundImageStretchMode": "uniform", // "uniformToFill"
+      "backgroundImageAlignment": "bottomRight", // "center"
+      "backgroundImageOpacity": 0.2, // 1.0
+      "opacity": 50, // 100
+      "padding": "4, 4, 4, 4", // "8, 8, 8, 8"
+      "background": "#000000",
+      // Advanced
+      "antialiasingMode": "cleartype", // "grayscale"
+      "historySize": 32767, // 9001
+      "bellStyle": ["window", "taskbar"], // "audible"
+      "autoMarkPrompts": true, // false
+      "showMarksOnScrollbar": true, // false
+      "rightClickContextMenu": true, // false
+      "experimental.repositionCursorWithMouse": true // false
+    },
+    "list": [
+      {
+        "name": "Windows PowerShell",
+        "guid": "{61c54bbd-c2c6-5271-96e7-009a87ff44bf}",
+        "commandline": "powershell -NoLogo",
+        "hidden": true
+      },
+      {
+        "name": "PowerShell",
+        "guid": "{574e775e-4f2a-5b96-ac1e-a2962a402336}",
+        "source": "Windows.Terminal.PowershellCore",
+        "commandline": "pwsh -NoLogo"
+      },
+      {
+        "name": "Command Prompt",
+        "guid": "{0caa0dad-35be-5f56-a8ff-afceeeaa6101}",
+        "commandline": "cmd /k %UserProfile%\\.cmdrc.bat"
+      },
+      {
+        "name": "Git Bash",
+        "guid": "{2ece5bfe-50ed-5f3a-ab87-5cd4baafed2b}",
+        "source": "Git"
+      },
+      {
+        "name": "WSL",
+        "guid": "{2c4de342-38b7-51cf-b940-2309a097f518}",
+        "source": "Windows.Terminal.Wsl",
+        "hidden": true
+      },
+      {
+        "name": "WSL - Ubuntu",
+        "guid": "{51855cb2-8cce-5362-8f54-464b92b32386}",
+        "source": "CanonicalGroupLimited.Ubuntu_79rhkp1fndgsc",
+        "commandline": "wsl -d Ubuntu",
+        "startingDirectory": "~",
+        // Download icon in PowerShell:
+        // > cd $env:LOCALAPPDATA/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState
+        // > mkdir icons && cd icons
+        // > curl -o ubuntu.png -R https://design.ubuntu.com/static/images/favicons/COF-favicon-48x48.png
+        "icon": "ms-appdata:///Local/icons/ubuntu.png"
+      },
+      {
+        "name": "SSH - Raspberry Pi",
+        // "source": "Windows.Terminal.SSH",
+        "commandline": "ssh rpi"
+      },
+      {
+        "name": "SSH - Home Assistant OS",
+        // "source": "Windows.Terminal.SSH",
+        "commandline": "ssh haos"
+      }
+    ]
+  },
+  // Themes
+  "themes": [
+    {
+      "name": "Dark with Mica",
+      "window": {
+        "applicationTheme": "dark",
+        "useMica": true // false
+      },
+      "tabRow": {
+        "background": "#00000000",
+        "unfocusedBackground": "#00000000"
+      },
+      "tab": {
+        "background": "#0000004D",
+        "unfocusedBackground": "#00000000",
+        "showCloseButton": "never" // "always"
+      }
+    }
+  ]
 }
