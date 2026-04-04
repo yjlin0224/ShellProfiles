@@ -108,8 +108,7 @@
       "bellStyle": ["window", "taskbar"], // "audible"
       "autoMarkPrompts": true, // false
       "showMarksOnScrollbar": true, // false
-      "rightClickContextMenu": true, // false
-      "experimental.repositionCursorWithMouse": true // false
+      "rightClickContextMenu": true // false
     },
     "list": [
       {
