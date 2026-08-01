@@ -78,7 +78,7 @@
       }, // "Campbell"
       "font": {
         // face = "Sarasa Term TC" & size = 10 => char size = 6.5px × 16.5px
-        "face": "Sarasa Term TC", // "Cascadia Mono"
+        "face": "Sarasa Term TC, Maple Mono NF CN", // "Cascadia Mono"
         "size": 10, // 12
         "features": {
           "cv10": 6,
@@ -147,19 +147,29 @@
         "startingDirectory": "~",
         // Download icon in PowerShell:
         // > cd $env:LOCALAPPDATA/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState
-        // > mkdir icons && cd icons
+        // > mkdir -f icons && cd icons
         // > curl -o ubuntu.png -R https://design.ubuntu.com/static/images/favicons/COF-favicon-48x48.png
         "icon": "ms-appdata:///Local/icons/ubuntu.png"
       },
       {
         "name": "SSH - Raspberry Pi",
         // "source": "Windows.Terminal.SSH",
-        "commandline": "ssh rpi"
+        "commandline": "ssh rpi",
+        // Download icon in PowerShell:
+        // > cd $env:LOCALAPPDATA/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState
+        // > mkdir -f icons && cd icons
+        // > curl -o raspberrry_pi.png -R https://assets.raspberrypi.com/favicon.png
+        "icon": "ms-appdata:///Local/icons/raspberrry_pi.png"
       },
       {
         "name": "SSH - Home Assistant OS",
         // "source": "Windows.Terminal.SSH",
-        "commandline": "ssh haos"
+        "commandline": "ssh haos",
+        // Download icon in PowerShell:
+        // > cd $env:LOCALAPPDATA/Packages/Microsoft.WindowsTerminal_8wekyb3d8bbwe/LocalState
+        // > mkdir -f icons && cd icons
+        // > curl -o home_assistant.png -R https://www.home-assistant.io/images/favicon-192x192.png
+        "icon": "ms-appdata:///Local/icons/home_assistant.png"
       }
     ]
   },
