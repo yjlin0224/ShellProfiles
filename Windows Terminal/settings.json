@@ -95,10 +95,10 @@
           "cv93": 3
         } // {}
       },
-      "backgroundImage": "D:/Pictures/Klaudia_ValentzHome_RelaxationWithoutBG.png", // null
+      // "backgroundImage": "D:/Pictures/Klaudia_ValentzHome_RelaxationWithoutBG.png", // null
       "backgroundImageStretchMode": "uniform", // "uniformToFill"
       "backgroundImageAlignment": "bottomRight", // "center"
-      "backgroundImageOpacity": 0.2, // 1.0
+      // "backgroundImageOpacity": 0.2, // 1.0
       "opacity": 50, // 100
       "padding": "4, 4, 4, 4", // "8, 8, 8, 8"
       "background": "#000000",
@@ -108,7 +108,16 @@
       "bellStyle": ["window", "taskbar"], // "audible"
       "autoMarkPrompts": true, // false
       "showMarksOnScrollbar": true, // false
-      "rightClickContextMenu": true // false
+      "rightClickContextMenu": true, // false
+      // [FIXME]: https://github.com/microsoft/terminal/issues/19521
+      // Temporary fix without turning ACM off:
+      // > magick "D:/Pictures/Klaudia_ValentzHome_RelaxationWithoutBG.png" `
+      // >   '(' +clone -background "#000000" -alpha remove -alpha off -evaluate multiply 0.2 ')' `
+      // >   '(' -clone 0 -alpha extract -threshold 1% ')' `
+      // >   -delete 0 -compose CopyOpacity -composite `
+      // >   "D:/Pictures/Klaudia_ValentzHome_Relaxation_Terminal.png"
+      "backgroundImage": "D:/Pictures/Klaudia_ValentzHome_Relaxation_Terminal.png",
+      "backgroundImageOpacity": 1.0
     },
     "list": [
       {
