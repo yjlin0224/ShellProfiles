@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { basename } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-const CYAN = '\x1b[36m', GREEN = '\x1b[32m', YELLOW = '\x1b[33m', RED = '\x1b[31m', RESET = '\x1b[0m';
+const CYAN = '\x1b[36m', GREEN = '\x1b[32m', YELLOW = '\x1b[33m', RED = '\x1b[31m', GRAY = '\x1b[90m', RESET = '\x1b[0m';
 const SEP = ' | ';
 
 // OSC 8 clickable link
@@ -23,22 +23,44 @@ function bar(pct) {
   return color + '█'.repeat(full) + partial + '░'.repeat(9 - full) + RESET;
 }
 
-const percent = (pct) => `${bar(pct)} ${Math.round(pct)}%`;
+// Bar plus value; a missing value shows a gray empty bar and N/A
+const percent = (pct) =>
+  pct != null ? `${bar(pct)} ${Math.round(pct)}%` : `${GRAY}${'░'.repeat(10)}${RESET} N/A`;
 
 function git(dir, ...args) {
   const r = spawnSync('git', ['-C', dir, ...args], { encoding: 'utf8', windowsHide: true });
-  return r.stdout ? r.stdout.trim().split('\n') : [];
+  return r.status === 0 ? r.stdout.trim() : null;
 }
 
 function gitInfo(dir) {
-  // One call: inside-work-tree flag, full HEAD hash, branch name ("HEAD" when detached)
-  const out = git(dir, 'rev-parse', '--is-inside-work-tree', 'HEAD', '--abbrev-ref', 'HEAD');
-  if (out[0] !== 'true') return null;
-  const hash = out.find((l) => /^[0-9a-f]{40,64}$/.test(l));
-  let branch = out.at(-1);
-  if (!hash) branch = git(dir, 'symbolic-ref', '--short', '-q', 'HEAD')[0]; // unborn branch (no commits yet)
-  else if (branch === 'HEAD') branch = 'detached';
-  return { branch, hash: hash?.slice(0, 8) };
+  // Reads refs only (no working-tree scan), so the cost doesn't grow with repo size.
+  // --points-at limits the ahead/behind computation to branches at HEAD.
+  const out = git(dir, 'for-each-ref', '--points-at=HEAD',
+    '--format=%(HEAD)%00%(refname:short)%00%(objectname)%00%(upstream)%00%(upstream:track,nobracket)', 'refs/heads');
+  if (out == null) {
+    // Not a repo, or an unborn branch (HEAD has no commit yet)
+    const branch = git(dir, 'symbolic-ref', '--short', '-q', 'HEAD');
+    return branch ? { branch } : null;
+  }
+  const row = out.split('\n').map((l) => l.split('\0')).find((f) => f[0] === '*');
+  if (!row) return { branch: 'detached', hash: git(dir, 'rev-parse', '--short=8', 'HEAD') };
+  const [, branch, hash, upstream, track] = row;
+  return {
+    branch,
+    hash: hash.slice(0, 8),
+    upstream: !!upstream,
+    gone: track === 'gone',
+    ahead: Number(/ahead (\d+)/.exec(track)?.[1] ?? 0),
+    behind: Number(/behind (\d+)/.exec(track)?.[1] ?? 0),
+  };
+}
+
+// Branch suffix: "(local)" without upstream, "(gone)" when the upstream ref was pruned, else ↑ahead ↓behind
+function syncState(g) {
+  if (g.upstream === undefined) return ''; // detached or unborn
+  if (!g.upstream) return ` ${GRAY}(local)${RESET}`;
+  if (g.gone) return ` ${RED}(gone)${RESET}`;
+  return (g.ahead ? ` ${GREEN}↑${g.ahead}${RESET}` : '') + (g.behind ? ` ${YELLOW}↓${g.behind}${RESET}` : '');
 }
 
 let input = '';
@@ -55,10 +77,10 @@ process.stdin.on('end', () => {
     const effort = d.effort?.level;
     line1.push(`✨ ${CYAN}${model}${effort ? ' ' + (EFFORT[effort] ?? effort) : ''}${RESET}`);
   }
-  const ctx = d.context_window?.used_percentage;
-  if (ctx != null) line1.push(`📜 ${percent(ctx)}`);
-  const fiveHour = d.rate_limits?.five_hour?.used_percentage;
-  if (fiveHour != null) line1.push(`⛽ ${percent(fiveHour)}`);
+  line1.push(`📜 ${percent(d.context_window?.used_percentage)}`);
+  // 5-hour usage with bar, 7-day usage in parentheses
+  const sevenDay = d.rate_limits?.seven_day?.used_percentage;
+  line1.push(`⛽ ${percent(d.rate_limits?.five_hour?.used_percentage)} (${sevenDay != null ? Math.round(sevenDay) + '%' : 'N/A'})`);
 
   const lines = [line1.join(SEP)];
 
@@ -70,7 +92,7 @@ process.stdin.on('end', () => {
       const slug = `${repo.owner}/${repo.name}`;
       line2.push(`📦 ${link(`https://${repo.host}/${slug}`, slug)}`);
     }
-    if (g.branch) line2.push(`🌿 ${g.branch}`);
+    if (g.branch) line2.push(`🌿 ${g.branch}${syncState(g)}`);
     if (g.hash) line2.push(`🔖 ${g.hash}`);
     if (line2.length) lines.push(line2.join(SEP));
   }
