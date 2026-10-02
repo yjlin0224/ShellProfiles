@@ -1,0 +1,27 @@
+{
+  // Updated with Claude Code v2.1.287
+  "advisorModel": "opus",
+  "effortLevel": "high",
+  "language": "繁體中文",
+  "model": "opus",
+  "permissions": {
+    "defaultMode": "auto",
+    "disableBypassPermissionsMode": "disable",
+    "skipAutoPermissionPrompt": true
+  },
+  "env": {
+    "EDITOR": "code",
+    "CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT": "使用者一段時間沒收到你的消息了。用繁體中文簡短說明你正在做什麼、發現了什麼、或有計劃變更，然後繼續。"
+  },
+  "theme": "auto",
+  "timeFormat": "%m/%d %I:%M:%S %p",
+  "tui": "fullscreen",
+  "attribution": false,
+  "allowedHttpHookUrls": [],
+  "allowManagedHooksOnly": true,
+  "agentPushNotifEnabled": true,
+  "inputNeededNotifEnabled": true,
+  "copyOnSelect": false,
+  "externalEditorContext": true,
+  "leftArrowOpensAgents": false
+}
