@@ -63,6 +63,14 @@ function syncState(g) {
   return (g.ahead ? ` ${GREEN}↑${g.ahead}${RESET}` : '') + (g.behind ? ` ${YELLOW}↓${g.behind}${RESET}` : '');
 }
 
+// Time left until epoch seconds as "Xd Xh Xm", dropping leading zero units
+function timeLeft(epoch) {
+  const mins = Math.floor((epoch * 1000 - Date.now()) / 60000);
+  if (mins < 1) return '<1m';
+  const d = Math.floor(mins / 1440), h = Math.floor((mins % 1440) / 60), m = mins % 60;
+  return d ? `${d}d ${h}h ${m}m` : h ? `${h}h ${m}m` : `${m}m`;
+}
+
 // Home directory from the environment; paths compare case-insensitively on Windows
 function isHome(dir) {
   const home = process.env.USERPROFILE ?? process.env.HOME;
@@ -95,9 +103,14 @@ process.stdin.on('end', () => {
     line1.push(`✨ ${CYAN}${model}${effort ? ' ' + (EFFORT[effort] ?? effort) : ''}${RESET}`);
   }
   line1.push(`📜 ${percent(d.context_window?.used_percentage)}`);
-  // 5-hour usage with bar, 7-day usage in parentheses
-  const sevenDay = d.rate_limits?.seven_day?.used_percentage;
-  line1.push(`⛽ ${percent(d.rate_limits?.five_hour?.used_percentage)} (${sevenDay != null ? Math.round(sevenDay) + '%' : 'N/A'})`);
+  // 5-hour usage with bar, 7-day usage and time left until reset in parentheses
+  const sevenDay = d.rate_limits?.seven_day;
+  let weekly = 'N/A';
+  if (sevenDay?.used_percentage != null) {
+    weekly = `${Math.round(sevenDay.used_percentage)}%`;
+    if (sevenDay.resets_at != null) weekly += ` - ${timeLeft(sevenDay.resets_at)}`;
+  }
+  line1.push(`⛽ ${percent(d.rate_limits?.five_hour?.used_percentage)} (${weekly})`);
 
   const lines = [line1.join(SEP)];
 
