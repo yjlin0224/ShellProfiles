@@ -1,8 +1,12 @@
 {
   "env": {
+    "CLAUDE_CODE_DISABLE_FEEDBACK_SURVEY": "1",
+    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1",
+    "CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT": "使用者一段時間沒收到你的消息了。用繁體中文簡短說明你正在做什麼、發現了什麼、或有計劃變更，然後繼續。",
+    "DISABLE_TELEMETRY": "1",
+    "DO_NOT_TRACK": "1",
     "EDITOR": "code",
-    "FORCE_HYPERLINK": "1",
-    "CLAUDE_CODE_SILENT_TURN_REMINDER_TEXT": "使用者一段時間沒收到你的消息了。用繁體中文簡短說明你正在做什麼、發現了什麼、或有計劃變更，然後繼續。"
+    "FORCE_HYPERLINK": "1"
   },
   "attribution": {
     "commit": "",
@@ -32,5 +36,7 @@
   "copyOnSelect": false,
   "externalEditorContext": true,
   "leftArrowOpensAgents": false,
-  "model": "opus"
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true
+  }
 }
