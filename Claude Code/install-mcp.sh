@@ -12,6 +12,14 @@ do
   claude mcp add "$name" --scope user -- npx --prefix '${USERPROFILE}' -y -p "$package" "$bin" "${extra[@]}"
 done
 
+# PaddleOCR (local CPU inference). PaddlePaddle has no Python 3.14 wheels yet.
+# Pinned to paddlepaddle 3.2.2: 3.3.1 crashes on CPU (oneDNN + PIR) with
+# "ConvertPirAttribute2RuntimeAttribute not support"; drop the pin once fixed.
+# https://github.com/PaddlePaddle/PaddleOCR/issues/18162
+# https://github.com/PaddlePaddle/Paddle/issues/79749
+claude mcp remove paddleocr --scope user >/dev/null 2>&1
+claude mcp add paddleocr --scope user -- uvx --python 3.13 --from "paddleocr-mcp[local-cpu]" --with paddlepaddle==3.2.2 paddleocr_mcp --model PP-OCRv6 --ppocr_source local
+
 # HTTP servers: URL from an environment variable, or prompted for when run
 # interactively; an empty value skips the server and leaves its entry untouched.
 ask_url() {
