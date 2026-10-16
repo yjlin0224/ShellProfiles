@@ -63,10 +63,11 @@ function syncState(g) {
   return (g.ahead ? ` ${GREEN}↑${g.ahead}${RESET}` : '') + (g.behind ? ` ${YELLOW}↓${g.behind}${RESET}` : '');
 }
 
-// Time left until epoch seconds as "Xd Xh Xm", dropping leading zero units
-function timeLeft(epoch) {
+// Time left until epoch seconds as "Xd Xh Xm", dropping leading zero units; minutesOnly gives "Xm"
+function timeLeft(epoch, minutesOnly = false) {
   const mins = Math.floor((epoch * 1000 - Date.now()) / 60000);
   if (mins < 1) return '<1m';
+  if (minutesOnly) return `${mins}m`;
   const d = Math.floor(mins / 1440), h = Math.floor((mins % 1440) / 60), m = mins % 60;
   return d ? `${d}d ${h}h ${m}m` : h ? `${h}h ${m}m` : `${m}m`;
 }
@@ -103,14 +104,17 @@ process.stdin.on('end', () => {
     line1.push(`✨ ${CYAN}${model}${effort ? ' ' + (EFFORT[effort] ?? effort) : ''}${RESET}`);
   }
   line1.push(`📜 ${percent(d.context_window?.used_percentage)}`);
-  // 5-hour usage with bar, 7-day usage and time left until reset in parentheses
+  // 5-hour usage with bar and minutes left, 7-day usage and time left until reset in parentheses
+  const fiveHour = d.rate_limits?.five_hour;
+  let session = percent(fiveHour?.used_percentage);
+  if (fiveHour?.used_percentage != null && fiveHour.resets_at != null) session += ` - ${timeLeft(fiveHour.resets_at, true)}`;
   const sevenDay = d.rate_limits?.seven_day;
   let weekly = 'N/A';
   if (sevenDay?.used_percentage != null) {
     weekly = `${Math.round(sevenDay.used_percentage)}%`;
     if (sevenDay.resets_at != null) weekly += ` - ${timeLeft(sevenDay.resets_at)}`;
   }
-  line1.push(`⛽ ${percent(d.rate_limits?.five_hour?.used_percentage)} (${weekly})`);
+  line1.push(`⛽ ${session} (${weekly})`);
 
   const lines = [line1.join(SEP)];
 
