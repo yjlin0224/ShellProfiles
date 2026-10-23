@@ -24,6 +24,12 @@
     "command": "node ~/.claude/statusline.mjs",
     "refreshInterval": 5
   },
+  "enabledPlugins": {
+    "gopls-lsp@claude-plugins-official": true,
+    "pyright-lsp@claude-plugins-official": true,
+    "security-guidance@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true
+  },
   "language": "繁體中文",
   "effortLevel": "high",
   "advisorModel": "opus",
@@ -34,8 +40,5 @@
   "agentPushNotifEnabled": true,
   "copyOnSelect": false,
   "externalEditorContext": true,
-  "leftArrowOpensAgents": false,
-  "enabledPlugins": {
-    "gopls-lsp@claude-plugins-official": true
-  }
+  "leftArrowOpensAgents": false
 }
