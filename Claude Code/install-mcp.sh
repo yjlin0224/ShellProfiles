@@ -20,6 +20,14 @@ done
 claude mcp remove paddleocr --scope user >/dev/null 2>&1
 claude mcp add paddleocr --scope user -- uvx --python 3.13 --from "paddleocr-mcp[local-cpu]" --with paddlepaddle==3.2.2 paddleocr_mcp --model PP-OCRv6 --ppocr_source local
 
+# Vuetify
+claude mcp remove vuetify --scope user >/dev/null 2>&1
+claude mcp add vuetify --scope user --transport http https://mcp.vuetifyjs.com/mcp
+
+# Context7
+claude mcp remove context7 --scope user >/dev/null 2>&1
+claude mcp add context7 --scope user --transport http https://mcp.context7.com/mcp/oauth
+
 # HTTP servers: URL from an environment variable, or prompted for when run
 # interactively; an empty value skips the server and leaves its entry untouched.
 ask_url() {
