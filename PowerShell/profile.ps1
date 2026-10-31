@@ -65,6 +65,29 @@ function Set-LastWriteTime {
     }
 }
 
+# Run a command from $WorkDirectory instead of $HOME when invoked at ~ (and return after).
+function Invoke-OutsideHome {
+    param(
+        [Parameter(Mandatory)] [string] $Name,
+        [Parameter(Mandatory)] [string] $WorkDirectory,
+        [object[]] $Arguments
+    )
+    $command = Get-Command $Name -CommandType ExternalScript, Application | Select-Object -First 1
+    $atHome = (Get-Location).ProviderPath.TrimEnd("\") -eq $HOME.TrimEnd("\")
+    if ($atHome) {
+        New-Item -ItemType Directory -Path $WorkDirectory -Force | Out-Null
+        Push-Location $WorkDirectory
+    }
+    try { & $command @Arguments }
+    finally { if ($atHome) { Pop-Location } }
+}
+
+# Claude Code never persists workspace trust for $HOME, so the trust dialog
+# appears on every launch from ~. Launch ccs/claude from ~\claude instead.
+$ClaudeWorkDirectory = Join-Path $HOME "claude"
+function ccs { Invoke-OutsideHome -Name ccs -WorkDirectory $ClaudeWorkDirectory -Arguments $args }
+function claude { Invoke-OutsideHome -Name claude -WorkDirectory $ClaudeWorkDirectory -Arguments $args }
+
 Set-Alias touch Set-LastWriteTime
 
 & {
@@ -77,9 +100,4 @@ Set-Alias touch Set-LastWriteTime
     Write-Host $Infomation -ForegroundColor Green
     Write-Host $Copyright -ForegroundColor DarkGray
     Write-Host
-}
-
-if (Test-Path "~\miniconda3" -PathType "Container") {
-    & "~\miniconda3\shell\condabin\conda-hook.ps1"
-    conda activate base
 }
