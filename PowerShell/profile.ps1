@@ -65,28 +65,66 @@ function Set-LastWriteTime {
     }
 }
 
-# Run a command from $WorkDirectory instead of $HOME when invoked at ~ (and return after).
-function Invoke-OutsideHome {
+# Get-ClaudeStartDirectory returns the directory to start ccs/claude from, or $null to stay in
+# the current directory:
+# 1. At ~ itself, start from ~\claude. Claude Code never persists workspace trust for $HOME, so
+#    the trust dialog would appear on every launch from ~. This rule comes first because ~ has
+#    no .git.
+# 2. Inside a git work tree, start from its top-level directory, so the session belongs to the
+#    repository.
+# 3. Outside git, inside a src or apps folder under the projects root, start from the directory
+#    that holds the first such folder: <root>\a\src\b and <root>\a\src both start from <root>\a.
+# The projects root is $Env:PROJECTS_ROOT, or D:\Projects when the variable isn't set.
+$ClaudeWorkDirectory = Join-Path $HOME "claude"
+$ProjectsRoot = if ($Env:PROJECTS_ROOT) { $Env:PROJECTS_ROOT.TrimEnd("\") } else { "D:\Projects" }
+function Get-ClaudeStartDirectory {
+    $current = (Get-Location).ProviderPath.TrimEnd("\")
+    if ($current -eq $HOME.TrimEnd("\")) {
+        return $ClaudeWorkDirectory
+    }
+    if (Get-Command git -CommandType Application -ErrorAction SilentlyContinue) {
+        $topLevel = git -C $current rev-parse --show-toplevel 2>$null
+        if ($LASTEXITCODE -eq 0 -and $topLevel) {
+            # git prints the path with forward slashes
+            $topLevel = [System.IO.Path]::GetFullPath($topLevel).TrimEnd("\")
+            if ($topLevel -eq $current) {
+                return $null
+            }
+            return $topLevel
+        }
+    }
+    if (-not $current.StartsWith("$ProjectsRoot\", [System.StringComparison]::OrdinalIgnoreCase)) {
+        return $null
+    }
+    $start = $ProjectsRoot
+    foreach ($segment in $current.Substring($ProjectsRoot.Length + 1).Split("\")) {
+        if ($segment -in "src", "apps") {
+            return $start
+        }
+        $start = Join-Path $start $segment
+    }
+    return $null
+}
+
+# Run ccs or claude from Get-ClaudeStartDirectory, and return to the current directory after.
+function Invoke-Claude {
     param(
         [Parameter(Mandatory)] [string] $Name,
-        [Parameter(Mandatory)] [string] $WorkDirectory,
         [object[]] $Arguments
     )
     $command = Get-Command $Name -CommandType ExternalScript, Application | Select-Object -First 1
-    $atHome = (Get-Location).ProviderPath.TrimEnd("\") -eq $HOME.TrimEnd("\")
-    if ($atHome) {
-        New-Item -ItemType Directory -Path $WorkDirectory -Force | Out-Null
-        Push-Location $WorkDirectory
+    $start = Get-ClaudeStartDirectory
+    if ($start) {
+        New-Item -ItemType Directory -Path $start -Force | Out-Null
+        Write-Host "Starting $Name in $start" -ForegroundColor DarkGray
+        Push-Location $start
     }
     try { & $command @Arguments }
-    finally { if ($atHome) { Pop-Location } }
+    finally { if ($start) { Pop-Location } }
 }
 
-# Claude Code never persists workspace trust for $HOME, so the trust dialog
-# appears on every launch from ~. Launch ccs/claude from ~\claude instead.
-$ClaudeWorkDirectory = Join-Path $HOME "claude"
-function ccs { Invoke-OutsideHome -Name ccs -WorkDirectory $ClaudeWorkDirectory -Arguments $args }
-function claude { Invoke-OutsideHome -Name claude -WorkDirectory $ClaudeWorkDirectory -Arguments $args }
+function ccs { Invoke-Claude -Name ccs -Arguments $args }
+function claude { Invoke-Claude -Name claude -Arguments $args }
 
 Set-Alias touch Set-LastWriteTime
 
